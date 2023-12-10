@@ -1,8 +1,5 @@
 import java.io.*;
-import java.security.KeyPair;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 
@@ -80,41 +77,44 @@ public class Main {
     public int resolveTask2(){
         int sum = 0;
         HashMap<Coordinates, List<Integer>> starsNumbers = new HashMap<>();
-        HashMap<Coordinates, Integer> starsAmount = new HashMap<>();
+        Set<Coordinates> starsCoordinates = new HashSet<>();
         for (int rowIndex = 0; rowIndex < charsMatrix.size(); rowIndex++){
             List<String> row = charsMatrix.get(rowIndex);
             for (int charIndex = 0; charIndex < charsMatrix.size(); charIndex++){
                 try {
                     Integer.parseInt(row.get(charIndex));
+                    // getting indexes of number
                     List<Integer> indexes = getNumbersIndexes(row, charIndex);
                     boolean isComponent = false;
                     for (int index:indexes) {
-                        isComponent = isComponent | isStarConnectedWithTwoNumbers(rowIndex, index, starsAmount);
+                        // Checking if number touches *
+                        isComponent = isComponent | isStarConnectedWithTwoNumbers(rowIndex, index, starsCoordinates);
                     }
                     if (isComponent) {
+                        // Creating number
                         String strNumber = "";
                         for (int index:indexes) {
                             strNumber += row.get(index);
                             charIndex = index;
                         }
                         int number = Integer.parseInt(strNumber);
-                        for (Coordinates coordinates : starsAmount.keySet()) {
+                        // Added number to location point of *
+                        for (Coordinates coordinates : starsCoordinates) {
                             if (starsNumbers.containsKey(coordinates)) {
                                 starsNumbers.get(coordinates).add(number);
-                                starsAmount.remove(coordinates);
                             }
                             else {
                                 List<Integer> list = new ArrayList<>();
                                 list.add(number);
                                 starsNumbers.put(coordinates, list);
-                                starsAmount.remove(coordinates);
                             }
+                            starsCoordinates.clear();
                         }
                     }
                 } catch (NumberFormatException ignored) {}
             }
         }
-
+        // Computing the sum of multiplications of 2 numbers
         for (Coordinates coordinates: starsNumbers.keySet()){
             int multiplication = 1;
             if (starsNumbers.get(coordinates).size() == 2){
@@ -126,7 +126,7 @@ public class Main {
         return sum;
     }
 
-    private boolean isStarConnectedWithTwoNumbers(int row, int column, HashMap<Coordinates, Integer> starsAmount){
+    private boolean isStarConnectedWithTwoNumbers(int row, int column, Set<Coordinates> starsAmount){
         int top, bottom, left, right;
         if (row != charsMatrix.size()-1) bottom = row + 1; else bottom = row;
         if (row != 0) top = row - 1; else top = row;
@@ -137,8 +137,7 @@ public class Main {
             for (int j = left; j <= right; j++){
                 if (i != row || j != column) {
                     if (charsMatrix.get(i).get(j).equals("*")) {
-                        Coordinates coordinates = new Coordinates(i, j);
-                        starsAmount.put(coordinates, 1);
+                        starsAmount.add(new Coordinates(i, j));
                         isNextToStar = true;
                     }
                 }
@@ -151,7 +150,6 @@ public class Main {
         Main program = new Main();
         program.readData();
         System.out.println(program.resolveTask1());
-        // 84266818
         System.out.println(program.resolveTask2());
     }
 }
