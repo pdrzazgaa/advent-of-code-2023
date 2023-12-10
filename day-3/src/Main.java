@@ -88,7 +88,7 @@ public class Main {
                     boolean isComponent = false;
                     for (int index:indexes) {
                         // Checking if number touches *
-                        isComponent = isComponent | isStarConnectedWithTwoNumbers(rowIndex, index, starsCoordinates);
+                        isComponent = isComponent | isStarConnected(rowIndex, index, starsCoordinates);
                     }
                     if (isComponent) {
                         // Creating number
@@ -126,7 +126,7 @@ public class Main {
         return sum;
     }
 
-    private boolean isStarConnectedWithTwoNumbers(int row, int column, Set<Coordinates> starsAmount){
+    private boolean isStarConnected(int row, int column, Set<Coordinates> starsAmount){
         int top, bottom, left, right;
         if (row != charsMatrix.size()-1) bottom = row + 1; else bottom = row;
         if (row != 0) top = row - 1; else top = row;
